@@ -1,0 +1,28 @@
+{
+  "name": "minijobpostandsearchapp2.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KrishCR97/MiniJobPostAndSearchApp2.0.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KrishCR97/MiniJobPostAndSearchApp2.0/issues"
+  },
+  "homepage": "https://github.com/KrishCR97/MiniJobPostAndSearchApp2.0#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.6",
+    "nodemon": "^1.17.5",
+    "q": "^1.5.1"
+  }
+}
