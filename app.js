@@ -21,7 +21,7 @@ app.config(function ($routeProvider) {
             return authService.checkUserInDBService();
         }]
     }).when('/searchJob',{
-        template : '',
+        templateUrl : 'searchJob.html',
         controller: 'searchJobController',
         resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
@@ -68,8 +68,6 @@ app.controller('loginController', function ($scope,$http) {
             }
             
         });
-        console.log($scope.formAuth.userName);
-        console.log($scope.formAuth.password);
     }
 });
 
@@ -84,16 +82,12 @@ app.controller('registerController', function ($scope, $http, $location) {
             location: $scope.registerForm.location,
             userType: $scope.registerForm.selectedRole
         };
-        for (var dat in newUserDetails) {
-            console.log(newUserDetails[dat]);
-        }
         $http.post('http://localhost:3000/saveUser', JSON.stringify(newUserDetails)).then((data) => {
             if (data.data.savedUser) {
                 console.log('Saved user.');
             }
         });
     }
-    console.log("hello");
 });
 
 app.controller('logOutController', function ($scope) {
@@ -104,8 +98,14 @@ app.controller('homeController',function($scope){
 
 });
 
-app.controller('/searchJob',function($scope){
+app.controller('searchJobController',function($scope){
+$scope.searchJob = function(){
 
+};
+
+$scope.resetAll = function(){
+    
+}
 });
 
 app.controller('postJobController',function($scope,$http){
