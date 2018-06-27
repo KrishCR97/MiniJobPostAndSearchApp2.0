@@ -14,9 +14,15 @@ var user_schema = mongoose.Schema({
     location: String,
     userType: String
 });
+var job_schema = mongoose.Schema({
+    title : String,
+    description : String,
+    keyword : String,
+    location : String
+});
 
 var user_model = mongoose.model('users', user_schema);
-
+var job_model = mongoose.model('job',job_schema);
 app.listen(3000, () => {
     console.log('Server running @ 3000')
     mongoose.connect("mongodb://localhost:27017/jobPortalDB")
@@ -62,4 +68,17 @@ app.post('/checkLogin', (req, res) => {
             res.send({ validUser: true , userType : doc[0].userType});
         }
     });
+});
+
+app.post('/saveJob',(req,res)=>{
+var jobToSave = new job_model(req.body);
+console.log(req.body);
+jobToSave.save((err, doc) => {
+    if (err) {
+        res.send({ savedJob: false })
+    }
+    else {
+        res.send({ savedJob: true })
+    }
+});
 });

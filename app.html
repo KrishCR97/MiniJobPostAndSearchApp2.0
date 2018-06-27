@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <div ng-app="myApp">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -25,13 +26,19 @@
                     <a href="#/home">Home</a>
                 </li>
                 <li>
+                    <a href="#/searchJob">Search Job</a>
+                </li>
+                <li>
+                    <a href="#/PostJob">Post Job</a>
+                </li>
+                <li>
                     <a href="#/logOut">Logout</a>
                 </li>
             </ul>
         </div>
     </nav>
     <div class="container">
-        <div ng-app="myApp">
+        
             <div ng-view="">
             </div>
         </div>

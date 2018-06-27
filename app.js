@@ -20,6 +20,18 @@ app.config(function ($routeProvider) {
         resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
+    }).when('/searchJob',{
+        template : '',
+        controller: 'searchJobController',
+        resolve: ['authService', function (authService) {
+            return authService.checkUserInDBService();
+        }]
+    }).when('/PostJob',{
+        templateUrl:'postJob.html',
+        controller:'postJobController',
+        resolve: ['authService', function (authService) {
+            return authService.checkUserInDBService();
+        }]
     }).otherwise({
         template: ''
     });
@@ -92,6 +104,25 @@ app.controller('homeController',function($scope){
 
 });
 
+app.controller('/searchJob',function($scope){
+
+});
+
+app.controller('postJobController',function($scope,$http){
+    $scope.saveJob = function(){
+        var newJob = {
+            title : $scope.job.title,
+            description : $scope.job.description,
+            keyword : $scope.job.keyword,
+            location : $scope.job.location
+        }
+        console.log(newJob);
+        $http.post('http://localhost:3000/saveJob',JSON.stringify(newJob)).then((data)=>{
+            console.log(data);
+        });
+    }
+});
+
 app.directive('loginDirective', function () {
     return {
         template: `
@@ -115,8 +146,7 @@ app.directive('loginDirective', function () {
 
 app.directive('registrationDirective', function () {
     return {
-        template: `
-        
+        template: `        
         <div class="row">
         <div class="col-sm-3"></div>
         </div>

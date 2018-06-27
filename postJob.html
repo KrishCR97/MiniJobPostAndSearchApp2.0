@@ -1,0 +1,17 @@
+<div class="row">
+        <div class="col-sm-3"></div>
+        </div>
+        <div class="col-sm-6"> 
+        <h1>Enter Description Of The Job:</h1>
+        <label>Job Title:</label> 
+        <input type="text" class='form-control'ng-model="job.title" placeholder="Job Title">
+        <label>Job Decription:</label> 
+        <textarea class="form-control rounded-0" ng-model="job.description" placeholder="Job Decription" rows="3"></textarea>        <label>Keyword:</label> 
+        <input type="text" class='form-control' ng-model="job.keyword" placeholder="Keyword">
+        <label>Location:</label> 
+        <input type="text" class='form-control' ng-model="job.location" placeholder="Location">
+        <br/><br/>
+        <input type="submit" class="btn btn-success" ng-click="saveJob()" value="Save Job">
+        </div>
+        <div class="col-sm-3"></div>    
+        </div>
