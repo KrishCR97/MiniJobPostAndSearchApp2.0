@@ -20,15 +20,15 @@ app.config(function ($routeProvider) {
         resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
-    }).when('/searchJob',{
-        templateUrl : 'searchJob.html',
+    }).when('/searchJob', {
+        templateUrl: 'searchJob.html',
         controller: 'searchJobController',
         resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
-    }).when('/PostJob',{
-        templateUrl:'postJob.html',
-        controller:'postJobController',
+    }).when('/PostJob', {
+        templateUrl: 'postJob.html',
+        controller: 'postJobController',
         resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
@@ -37,7 +37,7 @@ app.config(function ($routeProvider) {
     });
 });
 
-app.factory('authService', function ($http, $q) {
+app.factory('authService', function ($q) {
     return {
         checkUserInDBService: function () {
             var defer = $q.defer();
@@ -52,7 +52,18 @@ app.factory('authService', function ($http, $q) {
     }
 });
 
-app.controller('loginController', function ($scope,$http) {
+app.factory('isEmptyObjectService', function () {
+    return {
+        isEmpty: function (objectToCheck) {
+            for (var key in objectToCheck) {
+                if (objectToCheck.hasOwnProperty(key))
+                    return false;
+            }
+            return true;
+        }
+    }
+});
+app.controller('loginController', function ($scope, $http) {
     $scope.checkUserInDB = function () {
         var userLoginDetails = {
             userName: $scope.formAuth.userName,
@@ -63,10 +74,10 @@ app.controller('loginController', function ($scope,$http) {
             if (data.data.validUser) {
                 localStorage.isLogged = true;
             }
-            else{
+            else {
                 localStorage.isLogged = false;
             }
-            
+
         });
     }
 });
@@ -94,30 +105,88 @@ app.controller('logOutController', function ($scope) {
 
 });
 
-app.controller('homeController',function($scope){
+app.controller('homeController', function ($scope) {
 
 });
 
-app.controller('searchJobController',function($scope){
-$scope.searchJob = function(){
+app.controller('searchJobController', function ($scope, isEmptyObjectService, $http, $sce) {
+    $scope.searchJob = function () {
+        var jobSearchDetails = {
+            title: $scope.jobSearch.byTitle,
+            keyword: $scope.jobSearch.byKeyword,
+            location: $scope.jobSearch.byLocation
+        };
+        $scope.jobLists = '';
+        $http.post('http://localhost:3000/findJobs', JSON.stringify(jobSearchDetails)).then((data) => {
+            console.log(data.data.jobsFound);
+            var htmlData = "";
+            if (data.data.jobsFound){
+                var jobs = data.data.jobsList;
+                //console.log(jobs);
+                console.log(jobs[0]._id);
+            for(var index=0;index<jobs.length;index++) {
+            //console.log(job +"11121");
+            htmlData += `<div class="panel panel-default">
+            <div class="panel-heading">${jobs[index].title}</div>
+            <div class="panel-body">
+            <div>
+            <p>Job Description : ${jobs[index].description}</p>
+            <p>Location : ${jobs[index].location}</p>
+            <input type="submit" class="btn btn-primary" ng-click="applyJob()" id=${jobs[index]._id} value="Apply Job"/>
+            <input type="submit" class="btn btn-primary" ng-click="saveJob()" id=${jobs[index]._id} value="Save Job"/>
+            </div>
+            </div>
+        </div>`;
+                }
+        $scope.jobLists = $sce.trustAsHtml(htmlData);
+        console.log($scope.jobLists);
+            }
+        });
+        // $scope.jobSearch.byTitle = "";
+        // $scope.jobSearch.byTitle = "";
+        // $scope.jobSearch.byKeyword = "";
+        // $scope.jobSearch.byLocation = "";
+        // var jobSearchDetails = {};
+        // if($scope.jobSearch.byTitle != ""){
+        //    jobSearchDetails.title = $scope.jobSearch.byTitle;
+        // }
+        // if($scope.jobSearch.byKeyword != ""){
+        // jobSearchDetails.description = $scope.jobSearch.byKeyword;
+        // }
+        // if($scope.jobSearch.byLocation != ""){
+        //     jobSearchDetails.location = $scope.jobSearch.byLocation;
+        // }
+        // if(!isEmptyObjectService.isEmpty(jobSearchDetails)){
+        //     console.log("Empty");
+        // }
+    };
 
-};
-
-$scope.resetAll = function(){
-    
-}
-});
-
-app.controller('postJobController',function($scope,$http){
+    $scope.resetAll = function () {
+        $scope.jobSearch.byTitle = "";
+        $scope.jobSearch.byTitle = "";
+        $scope.jobSearch.byKeyword = "";
+        $scope.jobSearch.byLocation = "";
+    }
+    $scope.applyJob = function () {
+        
+        console.log("In apply Job")
+    }
     $scope.saveJob = function(){
+       
+        console.log("In save Job")
+    }
+});
+
+app.controller('postJobController', function ($scope, $http) {
+    $scope.saveJob = function () {
         var newJob = {
-            title : $scope.job.title,
-            description : $scope.job.description,
-            keyword : $scope.job.keyword,
-            location : $scope.job.location
+            title: $scope.job.title,
+            description: $scope.job.description,
+            keyword: $scope.job.keyword,
+            location: $scope.job.location
         }
         console.log(newJob);
-        $http.post('http://localhost:3000/saveJob',JSON.stringify(newJob)).then((data)=>{
+        $http.post('http://localhost:3000/saveJob', JSON.stringify(newJob)).then((data) => {
             console.log(data);
         });
     }

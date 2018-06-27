@@ -82,3 +82,17 @@ jobToSave.save((err, doc) => {
     }
 });
 });
+
+app.post('/findJobs',(req,res)=>{
+    var query = req.body;
+    console.log(query);
+    job_model.find(query,(err,docs)=>{
+        if(docs.length != 0){
+            console.log(docs);
+            res.send({jobsFound : true , jobsList : docs})
+        }else{
+            console.log("Hello");
+            res.send({jobsFound : false});
+        }
+    });
+});
