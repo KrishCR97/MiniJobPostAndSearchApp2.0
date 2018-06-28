@@ -21,12 +21,16 @@ var job_schema = mongoose.Schema({
     location: String
 });
 var applJob_schema = mongoose.Schema({
-    appliedJobId: String,
-    userName: String
+    title : String,
+    description : String,
+    location : String,
+    userName : String
 });
 var savedJobs_schema = mongoose.Schema({
-        SavedJobId: String,
-        userName: String
+    title : String,
+    description : String,
+    location : String,
+    userName : String
 });
 var user_model = mongoose.model('users', user_schema);
 var job_model = mongoose.model('job', job_schema);
@@ -130,6 +134,41 @@ app.post('/saveSavedJobs',(req,res)=>{
         else {
             res.send({ savedSavedJob: true });
             console.log(doc);
+        }
+    });
+});
+
+app.get('/showSavedJobs/:userName',(req,res)=>{
+    savedJobs_model.find({userName : req.params.userName}, (err, docs) => {
+        if (docs.length != 0) {
+            res.send({ jobsFound: true, jobsList: docs })
+        } else {
+            res.send({ jobsFound: false });
+        }
+    });
+});
+
+app.get('/showAppliedJobs/:userName',(req,res)=>{
+    console.log(req.params.userName);
+    applJob_model.find({userName : req.params.userName}, (err, docs) => {
+        if (docs.length != 0) {
+            console.log(docs);
+            res.send({ jobsFound: true, jobsList: docs })
+        } else {
+            console.log("Hello");
+            res.send({ jobsFound: false });
+        }
+    });
+});
+
+app.get('/getJobById/:id',(req,res)=>{
+    job_model.find({_id : req.params.id},(err, docs) => {
+        if (docs.length != 0) {
+            console.log(docs);
+            res.send({ jobFound: true, jobDetails: docs })
+        } else {
+            console.log("Hello");
+            res.send({ jobFound: false });
         }
     });
 });

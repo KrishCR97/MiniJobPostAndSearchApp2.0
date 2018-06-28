@@ -1,5 +1,5 @@
 var app = angular.module('myApp', ['ngRoute']);
-var userName = "";
+var userName = "Kishon";
 app.config(function ($routeProvider) {
     $routeProvider.when('/login', {
         template: '<login-directive></login-directive>',
@@ -32,16 +32,16 @@ app.config(function ($routeProvider) {
         resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
-    }).when('/savedJobs',{
-        templateUrl : 'savedJobs.html',
-        controller:'savedJobsController',
-        resolve:['authService',function(authService){
+    }).when('/savedJobs', {
+        templateUrl: 'savedJobs.html',
+        controller: 'savedJobsController',
+        resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
-    }).when('/appliedJobs',{
-        templateUrl : 'appliedJobs.html',
-        controller : 'appliedJobsController',
-        resolve:['authService',function(authService){
+    }).when('/appliedJobs', {
+        templateUrl: 'appliedJobs.html',
+        controller: 'appliedJobsController',
+        resolve: ['authService', function (authService) {
             return authService.checkUserInDBService();
         }]
     }).otherwise({
@@ -183,29 +183,38 @@ app.controller('searchJobController', function ($scope, isEmptyObjectService, $h
         angular.element(document.getElementById('jobsList'))[0].innerHTML = ""
     }
     $scope.applyJob = function (event) {
-        var appliedJobId = {
-            appliedJobId: event.target.id,
-            userName: 'Kishon'
-        }
+
         console.log(event.target.id);
         if (event.target.value != "Applied") {
-            $http.post('http://localhost:3000/saveAppliedJobs', JSON.stringify(appliedJobId)).then((data) => {
-                if (data.data.savedAppliedJob)
-                    console.log("Saved job in the database");
+            $http.get(`http://localhost:3000/getJobById/${event.target.id}`).then((data) => {
+                var appliedJobId = {
+                    title: data.data.jobDetails[0].title,
+                    description: data.data.jobDetails[0].description,
+                    location: data.data.jobDetails[0].location,
+                    userName: userName
+                }
+                $http.post('http://localhost:3000/saveAppliedJobs', JSON.stringify(appliedJobId)).then((data) => {
+                    console.log(data);
+                });
             });
         }
         event.target.value = "Applied";
         console.log("In apply Job")
     }
     $scope.saveJob = function (event) {
-        var savedJobId = {
-            SavedJobId: event.target.id,
-            userName: 'Kishon'
-        }
+
         if (event.target.value != "Saved") {
-            $http.post('http://localhost:3000/saveSavedJobs', JSON.stringify(savedJobId)).then((data) => {
-                if (data.data.savedSavedJob)
-                    console.log("Saved job in the database");
+            $http.get(`http://localhost:3000/getJobById/${event.target.id}`).then((data) => {
+                var saveJobForUser = {
+                    title: data.data.jobDetails[0].title,
+                    description: data.data.jobDetails[0].description,
+                    location: data.data.jobDetails[0].location,
+                    userName: userName
+                }
+                $http.post('http://localhost:3000/saveSavedJobs', JSON.stringify(saveJobForUser)).then((data) => {
+                    console.log(data);
+                });
+                console.log(data);
             });
         }
         event.target.value = "Saved";
@@ -228,12 +237,16 @@ app.controller('postJobController', function ($scope, $http) {
     }
 });
 
-app.controller('savedJobsController',function($http){
-
+app.controller('savedJobsController', function ($http) {
+    $http.get(`http://localhost:3000/showSavedJobs/${userName}`).then((data) => {
+        console.log(data);
+    });
 });
 
-app.controller('appliedJobsController',function($http){
-
+app.controller('appliedJobsController', function ($http) {
+    $http.get(`http://localhost:3000/showAppliedJobs/${userName}`).then((data) => {
+        console.log(data);
+    });
 });
 
 app.directive('loginDirective', function () {
