@@ -2,6 +2,8 @@
   <div class="col-sm-3"></div>
 </div>
 <div class="col-sm-6">
+  <a href='#/savedJobs' class="btn btn-success">SavedJobs</a>
+  <a href='#/appliedJobs' class="btn btn-success">AppliedJobs</a>
   <h1>Search Job By Categories</h1>
   <label>Search by title:</label>
   <input type="text" class='form-control' ng-model="jobSearch.byTitle" placeholder="Search by title">
@@ -18,12 +20,11 @@
 </div>
 <div class="row">
   <div class="col-sm-3"></div>
-<div class="col-sm-6">
-  <div ng-bind-html="jobLists">
-    {{jobLists}}
+  <div class="col-sm-6">
+    <div id="jobsList">
+    </div>
   </div>
-</div>
-<div class="col-sm-3"></div>
+  <div class="col-sm-3"></div>
 </div>
 
 <!-- <div class="card text-center">

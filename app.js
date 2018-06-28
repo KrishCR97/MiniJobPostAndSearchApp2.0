@@ -1,5 +1,5 @@
 var app = angular.module('myApp', ['ngRoute']);
-
+var userName = "";
 app.config(function ($routeProvider) {
     $routeProvider.when('/login', {
         template: '<login-directive></login-directive>',
@@ -30,6 +30,18 @@ app.config(function ($routeProvider) {
         templateUrl: 'postJob.html',
         controller: 'postJobController',
         resolve: ['authService', function (authService) {
+            return authService.checkUserInDBService();
+        }]
+    }).when('/savedJobs',{
+        templateUrl : 'savedJobs.html',
+        controller:'savedJobsController',
+        resolve:['authService',function(authService){
+            return authService.checkUserInDBService();
+        }]
+    }).when('/appliedJobs',{
+        templateUrl : 'appliedJobs.html',
+        controller : 'appliedJobsController',
+        resolve:['authService',function(authService){
             return authService.checkUserInDBService();
         }]
     }).otherwise({
@@ -73,6 +85,7 @@ app.controller('loginController', function ($scope, $http) {
             console.log(data.data.validUser);
             if (data.data.validUser) {
                 localStorage.isLogged = true;
+                userName = userLoginDetails.userName;
             }
             else {
                 localStorage.isLogged = false;
@@ -109,7 +122,7 @@ app.controller('homeController', function ($scope) {
 
 });
 
-app.controller('searchJobController', function ($scope, isEmptyObjectService, $http, $sce) {
+app.controller('searchJobController', function ($scope, isEmptyObjectService, $http, $compile) {
     $scope.searchJob = function () {
         var jobSearchDetails = {
             title: $scope.jobSearch.byTitle,
@@ -120,26 +133,27 @@ app.controller('searchJobController', function ($scope, isEmptyObjectService, $h
         $http.post('http://localhost:3000/findJobs', JSON.stringify(jobSearchDetails)).then((data) => {
             console.log(data.data.jobsFound);
             var htmlData = "";
-            if (data.data.jobsFound){
+            if (data.data.jobsFound) {
                 var jobs = data.data.jobsList;
                 //console.log(jobs);
                 console.log(jobs[0]._id);
-            for(var index=0;index<jobs.length;index++) {
-            //console.log(job +"11121");
-            htmlData += `<div class="panel panel-default">
+                for (var index = 0; index < jobs.length; index++) {
+                    htmlData += `<div class="panel panel-default">
             <div class="panel-heading">${jobs[index].title}</div>
             <div class="panel-body">
             <div>
             <p>Job Description : ${jobs[index].description}</p>
             <p>Location : ${jobs[index].location}</p>
-            <input type="submit" class="btn btn-primary" ng-click="applyJob()" id=${jobs[index]._id} value="Apply Job"/>
-            <input type="submit" class="btn btn-primary" ng-click="saveJob()" id=${jobs[index]._id} value="Save Job"/>
+            <input type="submit" class="btn btn-success" ng-click="applyJob($event)" id=${jobs[index]._id} value="Apply Job"/>
+            <input type="submit" class="btn btn-primary" ng-click="saveJob($event)" id=${jobs[index]._id} value="Save Job"/>
             </div>
             </div>
         </div>`;
                 }
-        $scope.jobLists = $sce.trustAsHtml(htmlData);
-        console.log($scope.jobLists);
+                //$scope.jobLists = $sce.trustAsHtml(htmlData);
+                var compiledElement = $compile(htmlData)($scope);
+                angular.element(document.getElementById('jobsList')).append(compiledElement);
+                console.log($scope.jobLists);
             }
         });
         // $scope.jobSearch.byTitle = "";
@@ -166,13 +180,35 @@ app.controller('searchJobController', function ($scope, isEmptyObjectService, $h
         $scope.jobSearch.byTitle = "";
         $scope.jobSearch.byKeyword = "";
         $scope.jobSearch.byLocation = "";
+        angular.element(document.getElementById('jobsList'))[0].innerHTML = ""
     }
-    $scope.applyJob = function () {
-        
+    $scope.applyJob = function (event) {
+        var appliedJobId = {
+            appliedJobId: event.target.id,
+            userName: 'Kishon'
+        }
+        console.log(event.target.id);
+        if (event.target.value != "Applied") {
+            $http.post('http://localhost:3000/saveAppliedJobs', JSON.stringify(appliedJobId)).then((data) => {
+                if (data.data.savedAppliedJob)
+                    console.log("Saved job in the database");
+            });
+        }
+        event.target.value = "Applied";
         console.log("In apply Job")
     }
-    $scope.saveJob = function(){
-       
+    $scope.saveJob = function (event) {
+        var savedJobId = {
+            SavedJobId: event.target.id,
+            userName: 'Kishon'
+        }
+        if (event.target.value != "Saved") {
+            $http.post('http://localhost:3000/saveSavedJobs', JSON.stringify(savedJobId)).then((data) => {
+                if (data.data.savedSavedJob)
+                    console.log("Saved job in the database");
+            });
+        }
+        event.target.value = "Saved";
         console.log("In save Job")
     }
 });
@@ -192,10 +228,17 @@ app.controller('postJobController', function ($scope, $http) {
     }
 });
 
+app.controller('savedJobsController',function($http){
+
+});
+
+app.controller('appliedJobsController',function($http){
+
+});
+
 app.directive('loginDirective', function () {
     return {
         template: `
-    
     <div class="row">
     <div class="col-sm-3"></div>
     </div>
